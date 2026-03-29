@@ -95,6 +95,5 @@ Only needed if you do **not** use the Vite proxy (e.g. deployed separately). You
 - Joi validation on inputs; Helmet + rate limiting on API.
 - Production error responses avoid leaking stack traces (see `errorHandler`).
 
-## License
-
-MIT (sample project).
+GitHub: https://github.com/your-username
+LinkedIn: https://linkedin.com/in/your-profile
