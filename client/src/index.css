@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  @apply antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ──── Global dark-mode form element styles ──── */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="file"]),
+.dark select,
+.dark textarea {
+  color: #f1f5f9; /* slate-100 */
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8; /* slate-400 */
+}
+
+.dark label {
+  color: #cbd5e1; /* slate-300 */
+}
+
+.dark option {
+  background-color: #020617; /* slate-950 */
+  color: #f1f5f9;           /* slate-100 */
+}
+
+/* Smooth transitions for theme-aware elements */
+.dark input,
+.dark select,
+.dark textarea,
+.dark label {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
