@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -28,6 +29,7 @@ import expenseRoutes from './routes/expenseRoutes.js';
 import * as meta from './controllers/metaController.js';
 
 const app = express();
+app.set('strict routing', false);
 const httpServer = createServer(app);
 
 // ✅ Trust proxy (important for Render / Railway)
@@ -97,7 +99,7 @@ app.get('/', (req, res) => {
   res.send('Smart ExpenseFlow API is running 🚀');
 });
 
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/api/health/'],(req, res) => {
   res.json({ ok: true });
 });
 
