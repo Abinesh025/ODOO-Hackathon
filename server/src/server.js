@@ -1,15 +1,6 @@
 import dotenv from 'dotenv';
-
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-// Fix __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load .env
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -28,6 +19,13 @@ import ruleRoutes from './routes/ruleRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import * as meta from './controllers/metaController.js';
 
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
 const app = express();
 app.set('strict routing', false);
 const httpServer = createServer(app);
@@ -37,16 +35,19 @@ app.set('trust proxy', 1);
 
 // ✅ CORS Configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173'
+  process.env.CLIENT_URL, // production frontend (Vercel)
+  'https://odoo-hackathon-mu.vercel.app', // optional fallback
+  'http://localhost:5173', // local dev
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps, curl)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.warn('Blocked by CORS:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -62,13 +63,14 @@ app.use(
 );
 
 // ✅ Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(limiter);
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 
 // ✅ Body Parser
 app.use(express.json({ limit: '2mb' }));
@@ -80,7 +82,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), uploadDir)));
 // ✅ Socket.IO
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   },
 });
@@ -88,6 +90,7 @@ const io = new Server(httpServer, {
 app.set('io', io);
 
 io.on('connection', (socket) => {
+  console.log('✅ Socket connected:', socket.id);
   socket.on('join', ({ userId, companyId }) => {
     if (userId) socket.join(`user:${userId}`);
     if (companyId) socket.join(`company:${companyId}`);
@@ -95,11 +98,11 @@ io.on('connection', (socket) => {
 });
 
 // ✅ Health Check
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Smart ExpenseFlow API is running 🚀');
 });
 
-app.get(['/api/health', '/api/health/'],(req, res) => {
+app.get(['/api/health', '/api/health/'], (_req, res) => {
   res.json({ ok: true });
 });
 
@@ -114,7 +117,7 @@ app.use('/api/approval-flow', approvalFlowRoutes);
 app.use('/api/rules', ruleRoutes);
 app.use('/api/expenses', expenseRoutes);
 
-// ❌ No frontend serving (since separate deployment)
+// ❌ No frontend serving (since frontend is deployed separately)
 
 // ✅ Error Handling
 app.use(notFoundHandler);
