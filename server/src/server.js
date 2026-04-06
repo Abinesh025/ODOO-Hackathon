@@ -38,6 +38,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL, // production frontend (Vercel)
   'https://odoo-hackathon-mu.vercel.app', // optional fallback
   'http://localhost:5173', // local dev
+  "http://localhost:3001"
 ];
 
 app.use(
