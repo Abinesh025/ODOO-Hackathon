@@ -39,7 +39,7 @@ const allowedOrigins = [
   'https://odoo-hackathon-mu.vercel.app',
   'http://localhost:5173',
   'http://localhost:3001',
-  'http://odoo.serveftp.com'
+  'https://odoo.serveftp.com'
 ];
 
 app.use(
