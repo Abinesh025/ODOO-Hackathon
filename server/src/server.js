@@ -35,10 +35,11 @@ app.set('trust proxy', 1);
 
 // ✅ CORS Configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL, // production frontend (Vercel)
-  'https://odoo-hackathon-mu.vercel.app', // optional fallback
-  'http://localhost:5173', // local dev
-  "http://localhost:3001"
+  process.env.CLIENT_URL,
+  'https://odoo-hackathon-mu.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3001',
+  'http://odoo.serveftp.com'
 ];
 
 app.use(
